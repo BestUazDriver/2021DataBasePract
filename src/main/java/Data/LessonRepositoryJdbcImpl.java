@@ -4,6 +4,7 @@ import Data.Models.Course;
 import Data.Models.Lesson;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -30,10 +31,10 @@ public class LessonRepositoryJdbcImpl implements LessonRepository {
     }
 
     private RowMapper<Lesson> lessonRowMapper = (rows, rowsNumber) -> {
-        Integer id=rows.getInt("id");
+        Integer id = rows.getInt("id");
         String name = rows.getString("lname");
         String date = rows.getString("timeandweek");
-        return new Lesson(id,name, date);
+        return new Lesson(id, name, date);
     };
 
     @Override

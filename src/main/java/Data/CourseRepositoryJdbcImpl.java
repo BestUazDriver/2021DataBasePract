@@ -47,12 +47,19 @@ public class CourseRepositoryJdbcImpl implements CourseRepository {
         return course;
 
     };
-    private RowMapper<Student> studentRowsMapper=(rows,rowNumber)->{
+    private RowMapper<Student> studentRowsMapper = (rows, rowNumber) -> {
         Integer id = rows.getInt("id");
         String name = rows.getString("name");
         String surname = rows.getString("surname");
         Integer group = rows.getInt("group");
         return new Student(id, name, surname, group);
+    };
+    private RowMapper<Teacher> teacherRowMapper = (rows, rowNumber) -> {
+        Integer id = rows.getInt("id");
+        String name = rows.getString("name");
+        String surname = rows.getString("surname");
+        Integer experience = rows.getInt("experience");
+        return new Teacher(id, name, surname, experience);
     };
 
     @Override
@@ -88,20 +95,21 @@ public class CourseRepositoryJdbcImpl implements CourseRepository {
         jdbcTemplate.update(SQL_UPDATE, course.getName(), course.getDateOfBeginEnd(), course.getTeacher().getId(), course.getId());
     }
 
-    private final ResultSetExtractor<Course> courseExtractor = resultSet -> {
-        Course course = null;
+
+    private final ResultSetExtractor<Teacher> tacherExtractor = resultSet -> {
+        Teacher teacher = null;
         if (resultSet.next()) {
-            course = courseRowsMapper.mapRow(resultSet, resultSet.getRow());
-            course.setStudents(new ArrayList<>());
+            teacher = teacherRowMapper.mapRow(resultSet, resultSet.getRow());
+            teacher.setCourses(new ArrayList<>());
 
             do {
-                Integer id = resultSet.getObject("student_id", Integer.class);
+                Integer id = resultSet.getObject("teacherid", Integer.class);
                 if (id != null) {
-                    Student student = studentRowsMapper.mapRow(resultSet, resultSet.getRow());
-                    course.getStudents().add(student);
+                    Course course = courseRowsMapper.mapRow(resultSet, resultSet.getRow());
+                    teacher.getCourses().add(course);
                 }
             } while (resultSet.next());
         }
-        return course;
+        return teacher;
     };
 }
